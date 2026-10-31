@@ -36,7 +36,7 @@ jobs:
     outputs:
       release-url: ${{ steps.release.outputs.url }}
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           token: ${{ github.token }}
@@ -46,7 +46,7 @@ jobs:
           CURRENT_BRANCH: ${{ github.ref_name }}
         run: test "$CURRENT_BRANCH" = "$DEFAULT_BRANCH"
       - name: Check out this workflow revision
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: dilettacal/github-workflows
           # github.workflow_sha is the caller's commit inside workflow_call.
