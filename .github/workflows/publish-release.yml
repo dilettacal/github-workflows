@@ -13,6 +13,10 @@ on:
         description: Stable X.Y.Z release version without v.
         required: true
         type: string
+      workflows-ref:
+        description: The github-workflows SHA this caller pins in `uses:`. Callers must set it.
+        required: false
+        type: string
     outputs:
       release-url:
         description: URL of the created or existing GitHub Release.
@@ -45,7 +49,8 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           repository: dilettacal/github-workflows
-          ref: ${{ github.workflow_sha }}
+          # github.workflow_sha is the caller's commit inside workflow_call.
+          ref: ${{ inputs.workflows-ref || github.workflow_sha }}
           path: .shared-workflows
       - name: Capture release date
         id: date

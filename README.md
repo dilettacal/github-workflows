@@ -14,6 +14,9 @@ Shared GitHub Actions policy and release workflows, maintained once and pinned b
 Copy a caller from [`examples/`](examples/), pin `<pinned-sha>`, and keep the
 caller responsible for events, permissions, checks, and branch protection.
 
+Release callers pass the same SHA as `workflows-ref`: inside `workflow_call`,
+`github.workflow_sha` is the caller's commit, not this repository's.
+
 Release callers dispatch `X.Y.Z`: first run opens a release PR; after merging
 it, run the same version again to publish the tag and GitHub Release.
 
