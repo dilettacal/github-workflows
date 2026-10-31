@@ -7,3 +7,7 @@ All notable changes to these reusable GitHub Actions workflows are recorded here
 ### Added
 
 - Reusable pull request policy and manual release workflows.
+
+### Fixed
+
+- Prepare releases through a pull request before publishing their tag and GitHub Release.

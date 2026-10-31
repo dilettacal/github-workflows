@@ -1,26 +1,26 @@
 # github-workflows
 
-Reusable GitHub Actions workflows for Python repositories.
+Shared GitHub Actions policy and release workflows, maintained once and pinned by consumer repositories.
 
-## Pull Request Policy
+## Workflows
 
-Use `examples/pull-request-policy.yml` (pinned to a commit SHA). Requires `contents: read` and safe for forks.
+| Workflow | Purpose |
+| --- | --- |
+| `pull-request-policy.yml` | Checks Conventional Commit-style PR titles and requires a changed `CHANGELOG.md` for releasable work. |
+| `publish-release.yml` | Prepares a versioned release PR, then publishes the tag and GitHub Release after that PR merges. |
 
-Enforces:
-- **PR Title**: Standard types (`feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`).
-- **Changelog**: Requires `CHANGELOG.md` edits unless the type is `chore`, `ci`, `style`, `test`, or `revert`.
+## Use
 
-## Manual Releases
+Copy a caller from [`examples/`](examples/), pin `<pinned-sha>`, and keep the
+caller responsible for events, permissions, checks, and branch protection.
 
-Use `examples/publish-release.yml` on the default branch with `contents: write`. Enter a version (`X.Y.Z`).
-
-- Supports `pyproject.toml` (`version = "X.Y.Z"`) or a `VERSION` file, along with a `## [Unreleased]` changelog section.
-- Automatically creates a release commit (`chore(release): X.Y.Z`), tags `vX.Y.Z`, and creates the GitHub Release.
-- Safe to re-run on failure; skips if already released.
+Release callers dispatch `X.Y.Z`: first run opens a release PR; after merging
+it, run the same version again to publish the tag and GitHub Release.
 
 ## Development
 
-Run tests and linting:
-
 ```sh
 pre-commit run --all-files && actionlint && python3 -m unittest discover -s tests -v
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup.

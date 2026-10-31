@@ -73,6 +73,20 @@ def release_notes(text: str, requested: str) -> str:
     return text[start:following].strip()
 
 
+def validate_prepared_release(changelog: Path, version_path: Path, requested: str) -> None:
+    if sum(h.group(1) == requested for h in HEADING.finditer(changelog.read_text())) != 1:
+        raise ValueError(f"CHANGELOG.md must contain exactly one version {requested}")
+    if version_path.name == "VERSION":
+        current = version_path.read_text().strip()
+    else:
+        match = PROJECT_VERSION.search(version_path.read_text())
+        if not match:
+            raise ValueError("pyproject.toml must contain a literal project version")
+        current = match.group(2)
+    if current != requested:
+        raise ValueError("prepared release version does not match release-version")
+
+
 def rollover_changelog(path: Path, requested: str, date: str) -> None:
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
         raise ValueError("release-date must be YYYY-MM-DD")
@@ -87,7 +101,7 @@ def rollover_changelog(path: Path, requested: str, date: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=("validate", "rollover", "update-version", "release-notes"))
+    parser.add_argument("command", choices=("validate", "validate-prepared", "rollover", "update-version", "release-notes"))
     parser.add_argument("--version", required=True)
     parser.add_argument("--date")
     parser.add_argument("--changelog", type=Path, default=Path("CHANGELOG.md"))
@@ -99,6 +113,8 @@ def main() -> int:
         if args.command == "validate":
             validate_changelog(args.changelog.read_text(), args.version)
             validate_project_version(args.version_file, args.version)
+        if args.command == "validate-prepared":
+            validate_prepared_release(args.changelog, args.version_file, args.version)
         if args.command == "rollover":
             if not args.date:
                 raise ValueError("rollover requires --date")
