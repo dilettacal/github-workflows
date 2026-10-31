@@ -1,6 +1,12 @@
 name: Publish merged release
 
 on:
+  workflow_call:
+    inputs:
+      workflows-ref:
+        description: The github-workflows SHA this caller pins in `uses:`. Callers must set it.
+        required: false
+        type: string
   pull_request:
     branches: [main]
     types: [closed]
@@ -17,6 +23,13 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
+      - name: Check out this workflow revision
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: dilettacal/github-workflows
+          # github.workflow_sha is the caller's commit inside workflow_call.
+          ref: ${{ inputs.workflows-ref || github.workflow_sha }}
+          path: .shared-workflows
       - name: Publish tag and release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -25,8 +38,8 @@ jobs:
           set -euo pipefail
           version="${PR_TITLE#chore(release): }"
           version="${version%% *}"
-          python3 scripts/release.py validate-prepared --version "$version"
+          python3 .shared-workflows/scripts/release.py validate-prepared --version "$version"
           git tag "v$version"
           git push origin "v$version"
-          python3 scripts/release.py release-notes --version "$version" > release-notes.md
+          python3 .shared-workflows/scripts/release.py release-notes --version "$version" > release-notes.md
           gh release create "v$version" --title "v$version" --notes-file release-notes.md
