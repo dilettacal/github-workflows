@@ -1,0 +1,13 @@
+name: Pull request policy
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  policy:
+    uses: dilettacal/github-workflows/.github/workflows/pull-request-policy.yml@<pinned-sha>

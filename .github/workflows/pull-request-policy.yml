@@ -1,0 +1,64 @@
+name: Pull request policy
+
+on:
+  workflow_call:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate-pull-request-title:
+    name: Conventional pull request title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          requireScope: false
+
+  require-changelog-update:
+    name: Changelog updated when required
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read conventional commit type
+        id: title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+          conventional_title='^([a-z]+)(\([^)]+\))?(!)?:'
+          if [[ "$PR_TITLE" =~ $conventional_title ]]; then
+            printf 'type=%s\n' "${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          else
+            echo 'type=invalid' >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 1
+      - name: Require CHANGELOG.md update for releasable types
+        if: ${{ !contains(fromJSON('["chore", "ci", "style", "test", "revert"]'), steps.title.outputs.type) }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          git diff --name-only "$BASE_SHA" HEAD | grep -qx 'CHANGELOG.md' || {
+            echo '::error::Update CHANGELOG.md, or use chore, ci, style, test, or revert.'
+            exit 1
+          }
