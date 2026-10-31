@@ -61,13 +61,14 @@ jobs:
           if git rev-parse -q --verify "refs/tags/v$RELEASE_VERSION" >/dev/null; then
             tag_commit=$(git rev-list -n 1 "v$RELEASE_VERSION")
             subject=$(git show -s --format=%s "$tag_commit")
-            if [ "$tag_commit" != "$(git rev-parse HEAD)" ] || [ "$subject" != "chore(release): $RELEASE_VERSION" ]; then
+            expected="chore(release): $RELEASE_VERSION"
+            if [ "$tag_commit" != "$(git rev-parse HEAD)" ] || { [ "$subject" != "$expected" ] && [ "${subject%% (#*}" != "$expected" ]; }; then
               echo '::error::Existing tag does not match this default-branch release commit; recover manually.'
               exit 1
             fi
             echo 'resuming=true' >> "$GITHUB_OUTPUT"
             gh release view "v$RELEASE_VERSION" --json url --jq '.url' 2>/dev/null | xargs -r -I{} echo "release-url={}" >> "$GITHUB_OUTPUT" || true
-          elif [ "$(git show -s --format=%s HEAD)" = "chore(release): $RELEASE_VERSION" ]; then
+          elif subject=$(git show -s --format=%s HEAD) && { [ "$subject" = "chore(release): $RELEASE_VERSION" ] || [ "${subject%% (#*}" = "chore(release): $RELEASE_VERSION" ]; }; then
             python3 .shared-workflows/scripts/release.py validate-prepared --version "$RELEASE_VERSION"
             echo 'resuming=true' >> "$GITHUB_OUTPUT"
           fi
