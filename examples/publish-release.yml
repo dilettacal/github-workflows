@@ -10,9 +10,11 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   release:
     uses: dilettacal/github-workflows/.github/workflows/publish-release.yml@<pinned-sha>
     with:
       release-version: ${{ inputs.release-version }}
+      workflows-ref: <pinned-sha>

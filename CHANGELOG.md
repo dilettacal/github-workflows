@@ -4,6 +4,11 @@ All notable changes to these reusable GitHub Actions workflows are recorded here
 
 ## [Unreleased]
 
+### Fixed
+
+- Check out release scripts at the caller-pinned `workflows-ref`; `github.workflow_sha` is the caller's commit under `workflow_call`.
+- Grant `pull-requests: write` in the release caller example.
+
 ## [0.1.0] - 2026-10-31
 
 ### Added
