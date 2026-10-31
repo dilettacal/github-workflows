@@ -98,9 +98,14 @@ jobs:
           git diff --cached --quiet && { echo '::error::No release changes to commit'; exit 1; }
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore(release): $RELEASE_VERSION"
           branch="release/v$RELEASE_VERSION"
-          git ls-remote --exit-code --heads origin "$branch" && exit 1 || true
-          git push origin "HEAD:refs/heads/$branch"
-          gh pr create --base "$DEFAULT_BRANCH" --head "$branch" --title "chore(release): $RELEASE_VERSION" --body 'Prepared release; review and merge before publishing the tag.'
+          remote_commit=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
+          if [ -n "$remote_commit" ]; then
+            test "$remote_commit" = "$(git rev-parse HEAD)"
+          else
+            git push origin "HEAD:refs/heads/$branch"
+          fi
+          gh pr list --head "$branch" --state open --json url --jq '.[0].url' | grep -q . || \
+            gh pr create --base "$DEFAULT_BRANCH" --head "$branch" --title "chore(release): $RELEASE_VERSION" --body 'Prepared release; review and merge before publishing the tag.'
       - name: Create GitHub Release from changelog notes
         if: ${{ steps.state.outputs.resuming }}
         id: release
