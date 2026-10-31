@@ -13,3 +13,4 @@ All notable changes to these reusable GitHub Actions workflows are recorded here
 ### Fixed
 
 - Prepare releases through a pull request before publishing their tag and GitHub Release.
+- Publish the tag and GitHub Release automatically when a release PR merges.
