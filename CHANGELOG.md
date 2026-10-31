@@ -4,6 +4,10 @@ All notable changes to these reusable GitHub Actions workflows are recorded here
 
 ## [Unreleased]
 
+### Changed
+
+- Publish in a single run when the default branch accepts the release commit; open a release PR only when branch protection rejects the push.
+
 ## [0.1.1] - 2026-10-31
 
 ### Fixed

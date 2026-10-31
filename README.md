@@ -17,8 +17,10 @@ caller responsible for events, permissions, checks, and branch protection.
 Release callers pass the same SHA as `workflows-ref`: inside `workflow_call`,
 `github.workflow_sha` is the caller's commit, not this repository's.
 
-Release callers dispatch `X.Y.Z`: first run opens a release PR; after merging
-it, run the same version again to publish the tag and GitHub Release.
+Release callers dispatch `X.Y.Z`. If the default branch accepts the bot's push,
+the same run commits, tags, and publishes the GitHub Release. If branch
+protection rejects it, the run opens a release PR; after merging it, run the same
+version again to publish.
 
 ## Development
 
