@@ -1,0 +1,15 @@
+name: Publish merged release
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    uses: dilettacal/github-workflows/.github/workflows/publish-merged-release.yml@<pinned-sha>
+    with:
+      workflows-ref: <pinned-sha>
