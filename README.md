@@ -1,6 +1,6 @@
 # github-workflows
 
-Reusable GitHub Actions workflows for Python repositories.
+Reusable GitHub Actions workflows for repositories.
 
 ## Pull Request Policy
 
