@@ -1,11 +1,18 @@
 # Contributing
 
-Use Python 3.11+ plus `actionlint`.
+Use Python 3.11+ plus `actionlint` and `pre-commit`.
+
+Install the local hook once:
+
+```sh
+python3 -m pip install pre-commit==4.3.0
+pre-commit install
+```
 
 Run the local checks with:
 
 ```sh
-actionlint && python3 -m unittest discover -s tests -v
+pre-commit run --all-files && actionlint && python3 -m unittest discover -s tests -v
 ```
 
 The fixtures exercise semantic-version and date-only legacy release histories. They do not make network calls.
