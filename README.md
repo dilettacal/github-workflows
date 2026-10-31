@@ -23,4 +23,4 @@ Use `examples/publish-release.yml` on the default branch with `contents: write`.
 Run tests and linting:
 
 ```sh
-actionlint && python3 -m unittest discover -s tests -v
+pre-commit run --all-files && actionlint && python3 -m unittest discover -s tests -v
