@@ -4,6 +4,8 @@ All notable changes to these reusable GitHub Actions workflows are recorded here
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-31
+
 ### Added
 
 - Reusable `publish-merged-release.yml` so consumer repositories publish the tag and GitHub Release when the release PR merges, without a second dispatch.
